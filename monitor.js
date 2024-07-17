@@ -47,14 +47,14 @@ pm2.connect(function (err) {
             bus.on('log:out', data => {
                 if (monitoredIds.includes(data.process.pm_id)) {
                     lastLogTimes[data.process.pm_id] = Date.now();
-                    console.log(`Log output detected from app ID: ${data.process.pm_id}, name: ${data.process.name}`);
+                    // console.log(`Log output detected from app ID: ${data.process.pm_id}, name: ${data.process.name}`);
                 }
             });
 
             // 定时检查日志时间
             setInterval(() => {
                 const now = Date.now();
-
+                console.log('Checking log times...');
                 for (const pm_id in lastLogTimes) {
                     if (now - lastLogTimes[pm_id] > MONITOR_INTERVAL) {
                         console.log(`App ID: ${pm_id} has no log output for over 1 minute. Restarting...`);
@@ -68,6 +68,7 @@ pm2.connect(function (err) {
                         });
                     }
                 }
+                console.log('Checked log times...', lastLogTimes);
             }, MONITOR_INTERVAL);
         });
     });
