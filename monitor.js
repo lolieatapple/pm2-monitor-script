@@ -1,20 +1,20 @@
 const pm2 = require('pm2');
 
-const MONITOR_INTERVAL = 60 * 1000; // 1 分钟
+const MONITOR_INTERVAL = 60 * 1000; // 1 minute
 
-// 从命令行获取需要监控的 PM2 任务 ID
+// Get PM2 process IDs to monitor from command line arguments
 const monitoredIds = process.argv.slice(2).map(id => parseInt(id, 10));
 
-// 检查是否传入了 PM2 任务 ID
+// Check if any PM2 process IDs were provided
 if (monitoredIds.length === 0) {
     console.error('Please provide at least one PM2 process ID to monitor.');
     process.exit(1);
 }
 
-// 存储最后一次日志时间的对象
+// Object to store the last log time for each monitored process
 const lastLogTimes = {};
 
-// 连接到 PM2
+// Connect to PM2
 pm2.connect(function (err) {
     if (err) {
         console.error('Error connecting to PM2', err);
@@ -23,7 +23,7 @@ pm2.connect(function (err) {
 
     console.log('Connected to PM2');
 
-    // 初始化最后一次日志时间
+    // Initialize the last log times for monitored processes
     pm2.list((err, list) => {
         if (err) {
             console.error('Error getting PM2 list', err);
@@ -37,7 +37,7 @@ pm2.connect(function (err) {
             }
         });
 
-        // 监控日志输出
+        // Monitor log output
         pm2.launchBus((err, bus) => {
             if (err) {
                 console.error('Error launching PM2 bus', err);
@@ -51,7 +51,7 @@ pm2.connect(function (err) {
                 }
             });
 
-            // 定时检查日志时间
+            // Periodically check the log times
             setInterval(() => {
                 const now = Date.now();
                 console.log('Checking log times...');
